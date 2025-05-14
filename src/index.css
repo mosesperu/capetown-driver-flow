@@ -124,4 +124,63 @@
   .reveal.active {
     @apply opacity-100 translate-y-0;
   }
+  
+  /* New dynamic animation classes */
+  .pulse-animation {
+    animation: pulse 2s infinite;
+  }
+  
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .zoom-on-hover {
+    @apply transition-transform duration-300;
+  }
+  
+  .zoom-on-hover:hover {
+    transform: scale(1.05);
+  }
+  
+  .glow-on-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .glow-on-hover:hover {
+    @apply shadow-lg;
+    box-shadow: 0 0 15px rgba(0, 124, 186, 0.6);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Chat widget customization */
+.tawk-min-container {
+  @apply !bottom-20 md:!bottom-6;
 }

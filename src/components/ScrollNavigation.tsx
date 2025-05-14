@@ -1,117 +1,122 @@
 
-import React, { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Car, ChartBar, HelpCircle, Workflow, MessageSquare } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useMobile } from "@/hooks/use-mobile";
 
-interface NavItem {
-  id: string;
-  label: string;
-}
+const ScrollNavigation = () => {
+  const [activeSection, setActiveSection] = useState<string>("");
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const { isMobile } = useMobile();
 
-const navItems: NavItem[] = [
-  { id: 'hero', label: 'Home' },
-  { id: 'benefits', label: 'Benefits' },
-  { id: 'process', label: 'Register' },
-  { id: 'commission', label: 'Earnings' },
-  { id: 'join', label: 'Join Now' }
-];
-
-const ScrollNavigation: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<string>('hero');
-  const [scrolled, setScrolled] = useState<boolean>(false);
-
-  // Handle scroll to show/hide nav background
   useEffect(() => {
     const handleScroll = () => {
-      const position = window.scrollY;
+      const scrollPosition = window.scrollY;
       
-      // Set navbar background when scrolled
-      if (position > 100) {
-        setScrolled(true);
+      if (scrollPosition > 50) {
+        setIsScrolled(true);
       } else {
-        setScrolled(false);
+        setIsScrolled(false);
       }
       
-      // Determine active section
-      const sections = navItems.map(item => 
-        document.getElementById(item.id)
-      );
+      // Get all sections
+      const sections = document.querySelectorAll("section[id]");
       
+      // Find the current active section
       sections.forEach((section) => {
-        if (!section) return;
+        const sectionTop = section.offsetTop - 100;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute("id") || "";
         
-        const top = section.offsetTop - 100;
-        const height = section.offsetHeight;
-        
-        if (position >= top && position < top + height) {
-          setActiveSection(section.id);
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+          setActiveSection(sectionId);
         }
       });
     };
     
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      window.scrollTo({
+        top: section.offsetTop - 80,
+        behavior: "smooth",
+      });
     }
   };
+  
+  const navItems = [
+    { id: "hero", icon: Car, label: "Home" },
+    { id: "benefits", icon: ChartBar, label: "Benefits" },
+    { id: "process", icon: Workflow, label: "Process" },
+    { id: "commission", icon: DollarSign, label: "Earnings" },
+    { id: "help", icon: HelpCircle, label: "Help" },
+    { id: "join", icon: MessageSquare, label: "Join" },
+  ];
 
   return (
-    <>
-      <nav className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        scrolled ? "bg-white shadow-md py-2" : "py-4"
-      )}>
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <a href="#" className="flex items-center gap-2">
-            <span className="font-bold text-2xl text-indrive-primary">in<span className="text-indrive-secondary">Drive</span></span>
-            <span className="hidden md:inline-block text-gray-500">Cape Town</span>
-          </a>
-
-          <div className="hidden md:flex space-x-1">
+    <header 
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
+      )}
+    >
+      <div className="container mx-auto px-4 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <span className={cn(
+            "font-bold text-2xl transition-colors duration-300",
+            isScrolled ? "text-indrive-primary" : "text-indrive-primary"
+          )}>
+            in<span className="text-indrive-primary">Drive</span>
+          </span>
+          {isScrolled && <span className="text-gray-600 text-sm hidden md:inline-block">Cape Town</span>}
+        </div>
+        
+        <nav className="hidden md:flex items-center space-x-8">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => scrollToSection(item.id)}
+              className={cn(
+                "flex items-center gap-1 text-sm font-medium transition-colors relative",
+                activeSection === item.id 
+                  ? "text-indrive-primary" 
+                  : "text-gray-600 hover:text-gray-800"
+              )}
+            >
+              <item.icon size={16} />
+              <span>{item.label}</span>
+              {activeSection === item.id && (
+                <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-indrive-primary rounded-full" />
+              )}
+            </button>
+          ))}
+        </nav>
+        
+        {isMobile && (
+          <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] flex justify-between px-2 py-3 z-50">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
                 className={cn(
-                  "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                  "flex flex-col items-center justify-center flex-1",
                   activeSection === item.id 
-                    ? "bg-indrive-light text-indrive-primary" 
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "text-indrive-primary" 
+                    : "text-gray-600"
                 )}
               >
-                {item.label}
+                <item.icon size={20} />
+                <span className="text-xs mt-1">{item.label}</span>
               </button>
             ))}
-          </div>
-
-          <button
-            onClick={() => scrollToSection('join')}
-            className="bg-indrive-primary hover:bg-indrive-secondary text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            Start Driving
-          </button>
-        </div>
-      </nav>
-
-      <button
-        onClick={scrollToTop}
-        className={cn(
-          "fixed bottom-6 right-6 bg-indrive-primary text-white p-3 rounded-full shadow-lg transition-all z-40",
-          scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          </nav>
         )}
-      >
-        <ChevronUp size={20} />
-      </button>
-    </>
+      </div>
+    </header>
   );
 };
 
