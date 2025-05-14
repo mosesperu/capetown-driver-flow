@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from "react";
-import { Car, ChartBar, HelpCircle, Workflow, MessageSquare } from "lucide-react";
+import { Car, ChartBar, HelpCircle, Workflow, MessageSquare, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ScrollNavigation = () => {
   const [activeSection, setActiveSection] = useState<string>("");
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const { isMobile } = useMobile();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,8 +24,8 @@ const ScrollNavigation = () => {
       
       // Find the current active section
       sections.forEach((section) => {
-        const sectionTop = section.offsetTop - 100;
-        const sectionHeight = section.offsetHeight;
+        const sectionTop = (section as HTMLElement).offsetTop - 100;
+        const sectionHeight = (section as HTMLElement).offsetHeight;
         const sectionId = section.getAttribute("id") || "";
         
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
