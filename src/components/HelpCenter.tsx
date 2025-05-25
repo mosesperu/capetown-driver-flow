@@ -1,3 +1,8 @@
+declare global {
+  interface Window {
+    Tawk_API?: any; // You can be more specific with the type if you know the Tawk_API structure
+  }
+}
 
 import React from 'react';
 import QRCodeDisplay from './QRCodeDisplay';
@@ -41,7 +46,16 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ affiliateLink }) => {
           <p className="text-xl text-gray-600 mb-4">
             Don't see your issue listed? Our support team is online 24/7.
           </p>
-          <button className="btn-primary inline-flex items-center gap-2">
+          <button 
+            className="btn-primary inline-flex items-center gap-2"
+            onClick={() => {
+              if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+                window.Tawk_API.maximize();
+              } else {
+                console.error("Tawk_API not available or maximize function is missing.");
+              }
+            }}
+          >
             Start Chat Now
           </button>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Car, ChartBar, HelpCircle, Workflow, MessageSquare, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -66,13 +65,14 @@ const ScrollNavigation = () => {
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="inDrive Logo" className="h-8 w-auto" />
           <span className={cn(
             "font-bold text-2xl transition-colors duration-300",
             isScrolled ? "text-indrive-primary" : "text-indrive-primary"
           )}>
             in<span className="text-indrive-primary">Drive</span>
           </span>
-          {isScrolled && <span className="text-gray-600 text-sm hidden md:inline-block">Cape Town</span>}
+          {isScrolled && <span className="text-gray-600 text-sm hidden md:inline-block">South Africa</span>}
         </div>
         
         <nav className="hidden md:flex items-center space-x-8">

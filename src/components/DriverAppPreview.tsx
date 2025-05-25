@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Car, Check, MapPin, Star } from 'lucide-react';
 
@@ -50,8 +49,10 @@ const DriverAppPreview: React.FC = () => {
             <Star size={14} />
             <span>4.93</span>
           </div>
-          <div>15.7 km</div>
-          <div>~ 22 min</div>
+          <div className="flex items-center">
+            <span className="mr-2">11.1 km</span>
+            <span>~ 11 min</span>
+          </div>
         </div>
         
         <div className="flex gap-2">
@@ -70,7 +71,7 @@ const DriverAppPreview: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-gray-50 p-3 rounded-lg">
             <p className="text-xs text-gray-500">Earnings</p>
-            <p className="text-lg font-bold text-gray-800">R 450.00</p>
+            <p className="text-lg font-bold text-gray-800">R 850.00</p>
           </div>
           <div className="bg-gray-50 p-3 rounded-lg">
             <p className="text-xs text-gray-500">Rides</p>
