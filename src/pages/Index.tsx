@@ -20,6 +20,7 @@ import ProcessStep from "@/components/ProcessStep";
 import DriverAppPreview from "@/components/DriverAppPreview";
 import HelpCenter from "@/components/HelpCenter";
 import TawkChatWidget from "@/components/TawkChatWidget";
+import TopDrivers from "@/components/TopDrivers";
 
 declare global {
   interface Window {
@@ -63,6 +64,7 @@ const Index = () => {
     <div className="overflow-x-hidden">
       <ScrollNavigation />
       <TawkChatWidget /> {/* Add the Tawk.to chat widget */}
+      
       
       {/* Hero Section */}
       <section id="hero" className="min-h-screen relative bg-gradient-to-br from-white to-indrive-light pt-20">
@@ -110,7 +112,7 @@ const Index = () => {
                     </div>
                   </div>
                   <p className="text-sm text-gray-600">
-                    Join <span className="font-bold">2,500+</span> drivers in South Africa
+                    Join <span className="font-bold">32,500+</span> drivers in South Africa
                   </p>
                 </div>
               </div>
@@ -137,7 +139,7 @@ const Index = () => {
           </a>
         </div>
       </section>
-      
+      <TopDrivers />
       {/* Key Benefits Section */}
       <section id="benefits" className="py-20 bg-white">
         <div className="container mx-auto px-4">

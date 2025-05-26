@@ -7,14 +7,18 @@ declare global {
 import React from 'react';
 import QRCodeDisplay from './QRCodeDisplay';
 import AssistanceTopics from './AssistanceTopics';
+import { MessageCircle, Zap } from 'lucide-react'; // Zap for WhatsApp, MessageCircle for chat
 
 interface HelpCenterProps {
   affiliateLink: string;
 }
 
 const HelpCenter: React.FC<HelpCenterProps> = ({ affiliateLink }) => {
+  const whatsappNumber = "+27815468283";
+  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\+/g, '')}`;
+
   return (
-    <section id="help" className="py-20 bg-white">
+    <section id="help" className="py-20 bg-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <span className="bg-indrive-light text-indrive-primary px-4 py-1 rounded-full text-sm font-medium inline-block mb-2">
@@ -43,21 +47,33 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ affiliateLink }) => {
         </div>
         
         <div className="mt-12 text-center">
-          <p className="text-xl text-gray-600 mb-4">
+          <p className="text-xl text-gray-600 mb-6">
             Don't see your issue listed? Our support team is online 24/7.
           </p>
-          <button 
-            className="btn-primary inline-flex items-center gap-2"
-            onClick={() => {
-              if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
-                window.Tawk_API.maximize();
-              } else {
-                console.error("Tawk_API not available or maximize function is missing.");
-              }
-            }}
-          >
-            Start Chat Now
-          </button>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button 
+              className="btn-primary inline-flex items-center gap-2"
+              onClick={() => {
+                if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+                  window.Tawk_API.maximize();
+                } else {
+                  console.error("Tawk_API not available or maximize function is missing.");
+                }
+              }}
+            >
+              <MessageCircle size={20} />
+              Start Chat Now
+            </button>
+            <a 
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary inline-flex items-center gap-2 bg-green-500 hover:bg-green-600"
+            >
+              <Zap size={20} />
+              WhatsApp Our Agents
+            </a>
+          </div>
         </div>
       </div>
     </section>
