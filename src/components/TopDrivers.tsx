@@ -26,11 +26,11 @@ const drivers: Driver[] = [
     description: 'Johan is a seasoned driver with a reputation for safety and excellent customer care.'
   },
   { 
-    name: 'Likho Makonza', 
-    image: '/likho-makonza.jpg',
+    name: 'Wandile Gubevu', 
+    image: '/wandile-Gubevu.jpg',
     rating: 4.8, 
     trips: 11956,
-    description: 'Likho provides a consistently smooth and comfortable ride, praised for his professionalism.'
+    description: 'Wandile provides a consistently smooth and comfortable ride, praised for his professionalism.'
   },
 ];
 
