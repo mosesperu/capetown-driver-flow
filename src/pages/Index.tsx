@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { 
   Car, 
   Check, 
@@ -21,6 +21,14 @@ import DriverAppPreview from "@/components/DriverAppPreview";
 import HelpCenter from "@/components/HelpCenter";
 import TawkChatWidget from "@/components/TawkChatWidget";
 import TopDrivers from "@/components/TopDrivers";
+import InDriveGame from "../InDriveGame";
+
+// Define AppState locally
+enum AppState {
+  START = 'START',
+  PLAYING = 'PLAYING',
+  GAME_OVER = 'GAME_OVER',
+}
 
 declare global {
   interface Window {
@@ -28,9 +36,97 @@ declare global {
   }
 }
 
+// New Component: HowToPlayGuide
+const HowToPlayGuide: React.FC = () => {
+  return (
+    <div className="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg h-full">
+      <h3 className="text-xl font-bold text-indrive-primary mb-3">How to Play</h3>
+      <ul className="list-disc list-inside space-y-2 text-sm text-gray-700">
+        <li>Use <span className="font-semibold">Arrow Keys</span> on desktop or <span className="font-semibold">Tap Controls</span> on mobile to change lanes.</li>
+        <li>Dodge oncoming <span className="font-semibold">vehicles</span>. Collision ends the game!</li>
+        <li>Pick up <span className="font-semibold">Passengers</span> (👤) for extra points.</li>
+        <li>Your <span className="font-semibold">Score</span> increases the longer you drive and for each passenger collected.</li>
+        <li>The <span className="font-semibold">Game Speed</span> increases as your score gets higher. Stay alert!</li>
+        <li>Enter your name after a game over to save your score to the <span className="font-semibold">High Scores</span> list.</li>
+      </ul>
+    </div>
+  );
+};
+
+// Modified HighScoresTable Component
+const HighScoresTable: React.FC<{ scores: { name?: string, score: number, date: string }[] }> = ({ scores }) => {
+  return (
+    <div className="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg h-full">
+      <h3 className="text-xl font-bold text-indrive-primary mb-3">High Scores</h3>
+      {scores.length > 0 ? (
+        <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+          {scores.map((entry, index) => (
+            <li key={index} className="flex justify-between items-center">
+              <div>
+                <span className="font-semibold">{entry.name || 'Player'}:</span> {entry.score} pts
+              </div>
+              <span className="text-xs text-gray-500">{entry.date}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="text-sm text-gray-600">No high scores yet. Be the first!</p>
+      )}
+    </div>
+  );
+};
+
 const Index = () => {
   const affiliateLink = "https://indriver.onelink.me/X6vF/1hk3t9ct";
   
+  // State for game and high scores, lifted up to Index
+  const [currentAppState, setCurrentAppState] = useState<AppState>(AppState.START);
+  const [currentScore, setCurrentScore] = useState<number>(0);
+  const [highScores, setHighScores] = useState<{ name?: string, score: number, date: string }[]>([]);
+
+  // Load high scores from localStorage on initial mount
+  useEffect(() => {
+    try {
+      const scoresStr = localStorage.getItem('inDriveGameHighScores');
+      if (scoresStr) {
+        setHighScores(JSON.parse(scoresStr));
+      }
+    } catch (e) {
+      console.error("Failed to load high scores", e);
+    }
+  }, []);
+
+  const handleGameStartRequested = useCallback(() => {
+    setCurrentScore(0);
+    setCurrentAppState(AppState.PLAYING);
+  }, []);
+
+  const handleGameReallyOver = useCallback((finalScore: number) => {
+    const flooredScore = Math.floor(finalScore);
+    setCurrentScore(flooredScore);
+    setCurrentAppState(AppState.GAME_OVER);
+  }, []);
+
+  // New callback for when player submits name and score
+  const handleSaveNamedScore = useCallback((name: string, score: number) => {
+    const MAX_HIGH_SCORES = 5;
+    try {
+      const newScoreEntry = { name: name, score: score, date: new Date().toLocaleDateString() };
+      
+      setHighScores(prevHighScores => {
+        const updatedScores = [...prevHighScores, newScoreEntry];
+        updatedScores.sort((a, b) => b.score - a.score);
+        const newHighScores = updatedScores.slice(0, MAX_HIGH_SCORES);
+        localStorage.setItem('inDriveGameHighScores', JSON.stringify(newHighScores));
+        return newHighScores;
+      });
+      // Potentially set a "score saved" message or similar here if needed
+    } catch (e) {
+      console.error("Failed to save high scores with name", e);
+    }
+    // After saving, the GameOverScreen is still shown. User clicks "Play Again" to change state.
+  }, []);
+
   // Initialize IntersectionObserver for scroll animations
   useEffect(() => {
     const observerOptions = {
@@ -141,8 +237,35 @@ const Index = () => {
       </section>
       <TopDrivers />
       {/* Key Benefits Section */}
-      <section id="benefits" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <section id="benefits" className="relative overflow-hidden py-20 bg-[#FAF7F0]">
+        {/* Lime Green Scribble Background Elements (Copied from game section) */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          <div 
+            className="absolute bg-[#92C83E] opacity-80"
+            style={{
+              width: '150%',
+              height: '100%',
+              top: '-20%',
+              left: '-50%',
+              transform: 'rotate(-25deg)',
+              borderRadius: '30% 70% 60% 40% / 40% 30% 70% 60%', 
+            }}
+          ></div>
+          <div
+            className="absolute bg-[#92C83E] opacity-60"
+            style={{
+              width: '120%',
+              height: '80%',
+              bottom: '-30%',
+              right: '-40%',
+              transform: 'rotate(15deg)',
+              borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%', 
+            }}
+          ></div>
+        </div>
+
+        {/* Original content of benefits section, wrapped to ensure it's above background */}
+        <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-12">
             <RevealOnScroll>
               <span className="bg-indrive-light text-indrive-primary px-4 py-1 rounded-full text-sm font-medium inline-block mb-2">
@@ -524,7 +647,69 @@ const Index = () => {
           </div>
         </div>
       </section>
-      
+
+      {/* InDrive Game Section */}
+      <section id="indrive-game" className="relative overflow-hidden py-10 sm:py-16 bg-[#FAF7F0]">
+        {/* Lime Green Scribble Background Elements */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          {/* These are abstract shapes to mimic the lime green background. Adjust rotation, position, scale, and opacity as needed. */}
+          <div 
+            className="absolute bg-[#92C83E] opacity-80"
+            style={{
+              width: '150%',
+              height: '100%',
+              top: '-20%',
+              left: '-50%',
+              transform: 'rotate(-25deg)',
+              borderRadius: '30% 70% 60% 40% / 40% 30% 70% 60%', // Creates an irregular blob shape
+            }}
+          ></div>
+          <div
+            className="absolute bg-[#92C83E] opacity-60"
+            style={{
+              width: '120%',
+              height: '80%',
+              bottom: '-30%',
+              right: '-40%',
+              transform: 'rotate(15deg)',
+              borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%', // Another irregular blob shape
+            }}
+          ></div>
+        </div>
+
+        {/* Ensure content is above the background shapes */}
+        <div className="relative z-10 container mx-auto px-4">
+          <RevealOnScroll>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-10">
+              Take a Break & <span className="text-indrive-primary">Play Our Game!</span>
+            </h2>
+          </RevealOnScroll>
+
+          {/* Three-column layout for game, guide, and scores */}
+          <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 items-start">
+            {/* Column 1: How to Play */}
+            <RevealOnScroll direction="left" className="lg:col-span-1">
+              <HowToPlayGuide />
+            </RevealOnScroll>
+
+            {/* Column 2: Phone Mockup (Game) - Centered */}
+            <RevealOnScroll className="lg:col-span-1 flex justify-center">
+              <div className="w-[300px] h-[600px] bg-gray-800 rounded-[40px] shadow-2xl overflow-hidden border-[10px] border-gray-800 relative mx-auto flex flex-col box-content">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 h-5 bg-gray-800 rounded-b-lg z-10"></div>
+                <div className="w-full h-full bg-white flex flex-col overflow-hidden">
+                  <InDriveGame onGameEndReport={handleSaveNamedScore} />
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            {/* Column 3: High Scores */}
+            <RevealOnScroll direction="right" className="lg:col-span-1">
+              <HighScoresTable scores={highScores} />
+            </RevealOnScroll>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-12">
         <div className="container mx-auto px-4">
