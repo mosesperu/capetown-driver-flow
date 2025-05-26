@@ -54,7 +54,7 @@ const ScrollNavigation = () => {
     { id: "commission", icon: DollarSign, label: "Earnings" },
     { id: "help", icon: HelpCircle, label: "Help" },
     { id: "join", icon: MessageSquare, label: "Join" },
-    { id: "indrive-game", icon: Gamepad2, label: "Play Game" },
+    // { id: "indrive-game", icon: Gamepad2, label: "Play Game" },
   ];
 
   return (

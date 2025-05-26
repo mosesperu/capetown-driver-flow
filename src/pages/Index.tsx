@@ -79,22 +79,39 @@ const HighScoresTable: React.FC<{ scores: { name?: string, score: number, date: 
 const Index = () => {
   const affiliateLink = "https://indriver.onelink.me/X6vF/1hk3t9ct";
   
-  // State for game and high scores, lifted up to Index
   const [currentAppState, setCurrentAppState] = useState<AppState>(AppState.START);
   const [currentScore, setCurrentScore] = useState<number>(0);
   const [highScores, setHighScores] = useState<{ name?: string, score: number, date: string }[]>([]);
+  const [isLoadingScores, setIsLoadingScores] = useState(false);
+  const [errorLoadingScores, setErrorLoadingScores] = useState<string | null>(null);
 
-  // Load high scores from localStorage on initial mount
-  useEffect(() => {
+  const fetchHighScores = useCallback(async () => {
+    setIsLoadingScores(true);
+    setErrorLoadingScores(null);
     try {
-      const scoresStr = localStorage.getItem('inDriveGameHighScores');
-      if (scoresStr) {
-        setHighScores(JSON.parse(scoresStr));
+      const response = await fetch('/.netlify/functions/get-scores');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch scores: ${response.statusText}`);
       }
-    } catch (e) {
-      console.error("Failed to load high scores", e);
+      const scoresData = await response.json();
+      // Convert date strings to more readable format if needed, or ensure consistent format
+      const formattedScores = scoresData.map((s: any) => ({ 
+        ...s, 
+        date: new Date(s.date).toLocaleDateString()
+      })); 
+      setHighScores(formattedScores);
+    } catch (e: any) {
+      console.error("Failed to load high scores from server", e);
+      setErrorLoadingScores(e.message || "Could not load scores.");
+      setHighScores([]); // Clear scores on error or set to a default
     }
+    setIsLoadingScores(false);
   }, []);
+
+  // Load high scores from server on initial mount
+  useEffect(() => {
+    fetchHighScores();
+  }, [fetchHighScores]);
 
   const handleGameStartRequested = useCallback(() => {
     setCurrentScore(0);
@@ -104,28 +121,38 @@ const Index = () => {
   const handleGameReallyOver = useCallback((finalScore: number) => {
     const flooredScore = Math.floor(finalScore);
     setCurrentScore(flooredScore);
-    setCurrentAppState(AppState.GAME_OVER);
+    // In this setup, InDriveGame handles its own game over modal for name input
+    // and then calls handleSaveNamedScore which Index.tsx passes as a prop.
+    // So, we don't automatically switch to AppState.GAME_OVER here.
+    // The state change might happen after score submission or if user skips.
   }, []);
 
-  // New callback for when player submits name and score
-  const handleSaveNamedScore = useCallback((name: string, score: number) => {
-    const MAX_HIGH_SCORES = 5;
+  const handleSaveNamedScore = useCallback(async (name: string, score: number) => {
+    console.log("Attempting to save score:", name, score);
     try {
-      const newScoreEntry = { name: name, score: score, date: new Date().toLocaleDateString() };
-      
-      setHighScores(prevHighScores => {
-        const updatedScores = [...prevHighScores, newScoreEntry];
-        updatedScores.sort((a, b) => b.score - a.score);
-        const newHighScores = updatedScores.slice(0, MAX_HIGH_SCORES);
-        localStorage.setItem('inDriveGameHighScores', JSON.stringify(newHighScores));
-        return newHighScores;
+      const newScoreEntry = { name: name, score: score }; // Date will be added by serverless function
+      const response = await fetch('/.netlify/functions/save-score', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newScoreEntry),
       });
-      // Potentially set a "score saved" message or similar here if needed
-    } catch (e) {
-      console.error("Failed to save high scores with name", e);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(`Failed to save score: ${errorData.message || response.statusText}`);
+      }
+      
+      console.log("Score saved, re-fetching high scores...");
+      await fetchHighScores(); // Re-fetch scores to update the list
+      // setCurrentAppState(AppState.GAME_OVER); // Transition to game over summary view if desired
+    } catch (e: any) {
+      console.error("Failed to save high score to server", e);
+      // Optionally, display an error message to the user
+      alert(`Error saving score: ${e.message}`);
     }
-    // After saving, the GameOverScreen is still shown. User clicks "Play Again" to change state.
-  }, []);
+  }, [fetchHighScores]);
 
   // Initialize IntersectionObserver for scroll animations
   useEffect(() => {
@@ -649,10 +676,11 @@ const Index = () => {
       </section>
 
       {/* InDrive Game Section */}
+      {/*
       <section id="indrive-game" className="relative overflow-hidden py-10 sm:py-16 bg-[#FAF7F0]">
-        {/* Lime Green Scribble Background Elements */}
+        //Lime Green Scribble Background Elements
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-          {/* These are abstract shapes to mimic the lime green background. Adjust rotation, position, scale, and opacity as needed. */}
+          // These are abstract shapes to mimic the lime green background. Adjust rotation, position, scale, and opacity as needed.
           <div 
             className="absolute bg-[#92C83E] opacity-80"
             style={{
@@ -677,7 +705,7 @@ const Index = () => {
           ></div>
         </div>
 
-        {/* Ensure content is above the background shapes */}
+        //Ensure content is above the background shapes
         <div className="relative z-10 container mx-auto px-4">
           <RevealOnScroll>
             <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-10">
@@ -685,14 +713,14 @@ const Index = () => {
             </h2>
           </RevealOnScroll>
 
-          {/* Three-column layout for game, guide, and scores */}
+          //Three-column layout for game, guide, and scores
           <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 items-start">
-            {/* Column 1: How to Play */}
+            //Column 1: How to Play
             <RevealOnScroll direction="left" className="lg:col-span-1">
               <HowToPlayGuide />
             </RevealOnScroll>
 
-            {/* Column 2: Phone Mockup (Game) - Centered */}
+            //Column 2: Phone Mockup (Game) - Centered
             <RevealOnScroll className="lg:col-span-1 flex justify-center">
               <div className="w-[300px] h-[600px] bg-gray-800 rounded-[40px] shadow-2xl overflow-hidden border-[10px] border-gray-800 relative mx-auto flex flex-col box-content">
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 h-5 bg-gray-800 rounded-b-lg z-10"></div>
@@ -702,13 +730,16 @@ const Index = () => {
               </div>
             </RevealOnScroll>
 
-            {/* Column 3: High Scores */}
+            //Column 3: High Scores
             <RevealOnScroll direction="right" className="lg:col-span-1">
-              <HighScoresTable scores={highScores} />
+              {isLoadingScores && <p>Loading scores...</p>}
+              {errorLoadingScores && <p>Error: {errorLoadingScores}</p>}
+              {!isLoadingScores && !errorLoadingScores && <HighScoresTable scores={highScores} />}
             </RevealOnScroll>
           </div>
         </div>
       </section>
+      */}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-12">
