@@ -375,8 +375,18 @@ const Index = () => {
       </section>
       
       {/* Registration Process */}
-      <section id="process" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section id="process" className="relative overflow-hidden py-20 bg-gray-50">
+        {/* Decorative Tag Background */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+          <img 
+            src="/process-tag-background.png"
+            alt=""
+            className="w-full h-full object-contain opacity-90 rotate-6 max-w-4xl md:max-w-5xl lg:max-w-6xl"
+          />
+        </div>
+
+        {/* Content Wrapper */}
+        <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-12">
             <RevealOnScroll>
               <span className="bg-indrive-light text-indrive-primary px-4 py-1 rounded-full text-sm font-medium inline-block mb-2">
@@ -590,6 +600,38 @@ const Index = () => {
         </div>
       </section>
       
+      {/* Topup Section */}
+      <section id="topup" className="relative overflow-hidden py-20 bg-gradient-to-br from-white to-indrive-light">
+        {/* Decorative background elements */}
+        <div className="absolute -left-10 -top-10 w-48 h-48 bg-indrive-primary rounded-full opacity-10"></div>
+        <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-indrive-primary rounded-full opacity-5"></div>
+        
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <RevealOnScroll>
+            <span className="bg-indrive-primary/10 text-indrive-primary px-4 py-1 rounded-full text-sm font-medium inline-block mb-2">
+              Account Balance
+            </span>
+            <h2 className="section-title">
+              Top Up Your Account & Keep <span className="text-indrive-primary">Driving</span>
+            </h2>
+            <p className="section-subtitle max-w-2xl mx-auto">
+              Ensure your inDrive account always has a sufficient balance to cover our low 9.9% service fee on completed rides. Topping up is quick and easy, allowing you to seamlessly continue accepting rides and maximizing your earnings without interruption. Click the button below to learn more and top up your account.
+            </p>
+            <div className="mt-8">
+              <a
+                href="https://indrivetopup.my.canva.site/topup"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                <DollarSign size={20} />
+                Top Up Now
+              </a>
+            </div>
+          </RevealOnScroll>
+        </div>
+      </section>
+
       {/* Help Center Section */}
       <HelpCenter affiliateLink={affiliateLink} />
       

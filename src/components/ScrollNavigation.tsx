@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Car, ChartBar, HelpCircle, Workflow, MessageSquare, DollarSign, Gamepad2 } from "lucide-react";
+import { Car, ChartBar, HelpCircle, Workflow, MessageSquare, DollarSign, Gamepad2, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -52,6 +52,7 @@ const ScrollNavigation = () => {
     { id: "benefits", icon: ChartBar, label: "Benefits" },
     { id: "process", icon: Workflow, label: "Process" },
     { id: "commission", icon: DollarSign, label: "Earnings" },
+    { id: "topup", icon: CreditCard, label: "Topup" },
     { id: "help", icon: HelpCircle, label: "Help" },
     { id: "join", icon: MessageSquare, label: "Join" },
     // { id: "indrive-game", icon: Gamepad2, label: "Play Game" },
