@@ -437,8 +437,35 @@ const Index = () => {
       </section>
       
       {/* Commission Comparison */}
-      <section id="commission" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <section id="commission" className="relative overflow-hidden py-20 bg-[#FAF7F0]">
+        {/* Lime Green Scribble Background Elements (Copied from benefits section) */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          <div 
+            className="absolute bg-[#92C83E] opacity-80"
+            style={{
+              width: '150%',
+              height: '100%',
+              top: '-20%',
+              left: '-50%',
+              transform: 'rotate(-25deg)',
+              borderRadius: '30% 70% 60% 40% / 40% 30% 70% 60%', 
+            }}
+          ></div>
+          <div
+            className="absolute bg-[#92C83E] opacity-60"
+            style={{
+              width: '120%',
+              height: '80%',
+              bottom: '-30%',
+              right: '-40%',
+              transform: 'rotate(15deg)',
+              borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%', 
+            }}
+          ></div>
+        </div>
+
+        {/* Original content of commission section, wrapped to ensure it's above background */}
+        <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-12">
             <RevealOnScroll>
               <span className="bg-indrive-light text-indrive-primary px-4 py-1 rounded-full text-sm font-medium inline-block mb-2">
