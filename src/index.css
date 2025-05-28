@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -114,7 +113,25 @@
   }
 
   .btn-primary {
-    @apply bg-indrive-primary hover:bg-indrive-secondary text-white font-medium py-3 px-6 rounded-full transition-all shadow-md hover:shadow-lg;
+    @apply bg-indrive-primary text-white font-medium py-3 px-6 rounded-full transition-all duration-150 ease-in-out;
+    /* Custom 3D effect */
+    border-bottom-width: 4px; /* Creates space for the "edge" */
+    border-bottom-color: rgba(0, 0, 0, 0.25); /* Darker edge */
+    box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 0.20); /* Offset shadow for 3D look */
+  }
+
+  .btn-primary:hover {
+    @apply bg-indrive-secondary; /* Keep existing hover background */
+    box-shadow: 0px 6px 0px 0px rgba(0, 0, 0, 0.20); /* Slightly larger shadow on hover */
+    transform: translateY(-1px); /* Slight lift on hover */
+  }
+
+  .btn-primary:active {
+    @apply bg-indrive-secondary; /* Or an even darker shade if preferred */
+    /* "Pressed" effect */
+    box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.25); /* Shadow moves "under" */
+    transform: translateY(2px); /* Button moves down */
+    border-bottom-width: 2px; /* Bottom border appears thinner */
   }
 
   .reveal {
